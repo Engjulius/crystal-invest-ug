@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const cron = require('node-cron');
+const mongoose = require('mongoose'); // Ensure mongoose is imported for ObjectId checks
 const { User, Package, UserPackage, Transaction, Deposit, Withdrawal } = require('./database');
 
 const app = express();
@@ -170,13 +171,25 @@ app.post('/api/deposit', async (req, res) => {
     }
 });
 
-// 8. Buy Mining Package (Max 10 total active rigs & Max 3 active instances per tier)
+// 8. Buy Mining Package (Robust Lookup supporting ObjectId, custom ID, and Name)
 app.post('/api/buy-package', async (req, res) => {
     try {
         const { user_id, package_id } = req.body;
         trackActivity(user_id);
 
-        const pkg = await Package.findById(package_id);
+        let pkg = null;
+        if (package_id) {
+            if (mongoose.Types.ObjectId.isValid(package_id)) {
+                pkg = await Package.findById(package_id);
+            }
+            if (!pkg) {
+                pkg = await Package.findOne({ id: package_id });
+            }
+            if (!pkg) {
+                pkg = await Package.findOne({ name: package_id });
+            }
+        }
+
         if (!pkg) return res.status(404).json({ error: 'Package not found.' });
 
         const user = await User.findById(user_id);
