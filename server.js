@@ -531,3 +531,27 @@ app.get('/api/user-referrals/:id', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Crystal Invest Uganda Server running on port ${PORT}`);
 });
+
+app.post('/api/forgot-password', async (req, res) => {
+    try {
+        const { phone, new_password } = req.body;
+
+        if (!phone || !new_password) {
+            return res.status(400).json({ error: 'Please provide both phone number and new password.' });
+        }
+
+        const user = await User.findOne({ phone });
+        if (!user) {
+            return res.status(404).json({ error: 'No account found with this phone number.' });
+        }
+
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(new_password, 10);
+        user.password = hashedPassword;
+        await user.save();
+
+        res.json({ success: true, message: 'Password reset successful! You can now log in.' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
