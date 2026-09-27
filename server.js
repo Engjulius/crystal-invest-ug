@@ -403,11 +403,20 @@ app.get('/api/admin/user-packages', async (req, res) => {
         const offset = parseInt(req.query.offset) || 0;
 
         const total = await UserPackage.countDocuments({});
-        const packages = await UserPackage.find({})
-            .populate('user_id', 'username phone')
+        const rawPackages = await UserPackage.find({})
             .sort({ start_date: -1 })
             .skip(offset)
             .limit(limit);
+
+        // Manually attach user info to ensure username and phone are never undefined
+        const packages = await Promise.all(rawPackages.map(async (pkg) => {
+            const user = await User.findById(pkg.user_id).select('username phone');
+            return {
+                ...pkg.toObject(),
+                username: user ? user.username : 'Unknown',
+                phone: user ? user.phone : 'N/A'
+            };
+        }));
 
         res.json({
             packages,
@@ -499,6 +508,3 @@ app.get('/api/user-referrals/:id', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Crystal Invest Uganda Server running on port ${PORT}`);
 });
-
-
-// helloo
