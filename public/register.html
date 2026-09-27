@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crystal Invest UG - Register</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #f43f5e, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group.full {
+            grid-column: span 2;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        input:focus, select:focus { outline: none; border-color: #fbbf24; }
+        select option { background: #1e1b4b; color: white; }
+
+        .btn {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+
+        .password-field {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-field input {
+            padding-right: 70px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #fbbf24;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 6px;
+        }
+
+        .toggle-password:hover { background: rgba(251, 191, 36, 0.1); }
+        .btn:hover { opacity: 0.9; }
+        #error-msg { color: #f87171; margin-bottom: 15px; font-size: 0.9rem; text-align: center; }
+        .login-link { text-align: center; margin-top: 15px; font-size: 0.9rem; color: #94a3b8; }
+        .login-link a { color: #fbbf24; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <div class="glass-card">
+        <h2>Create Account</h2>
+        <div id="error-msg"></div>
+        <form id="register-form">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="username" required placeholder="e.g. username123">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="text" id="phone" required placeholder="07XXXXXXXX">
+                </div>
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" id="first_name" required placeholder="first name">
+                </div>
+                <div class="form-group">
+                    <label>Second Name</label>
+                    <input type="text" id="second_name" required placeholder="second name">
+                </div>
+
+                <!-- Replaced Age with District Dropdown -->
+                <div class="form-group">
+                    <label>District</label>
+                    <select id="district" required>
+                        <option value="" disabled selected>Select District</option>
+                        <option value="Kampala">Kampala</option>
+                        <option value="Wakiso">Wakiso</option>
+                        <option value="Mukono">Mukono</option>
+                        <option value="Jinja">Jinja</option>
+                        <option value="Mbarara">Mbarara</option>
+                        <option value="Gulu">Gulu</option>
+                        <option value="Lira">Lira</option>
+                        <option value="Mbale">Mbale</option>
+                        <option value="Fort Portal (Kabarole)">Fort Portal (Kabarole)</option>
+                        <option value="Arua">Arua</option>
+                        <option value="Masaka">Masaka</option>
+                        <option value="Kasese">Kasese</option>
+                        <option value="Hoima">Hoima</option>
+                        <option value="Kabale">Kabale</option>
+                        <option value="Soroti">Soroti</option>
+                        <option value="Tororo">Tororo</option>
+                        <option value="Iganga">Iganga</option>
+                        <option value="Busia">Busia</option>
+                        <option value="Luweero">Luweero</option>
+                        <option value="Mubende">Mubende</option>
+                        <option value="Nakasongola">Nakasongola</option>
+                        <option value="Kayunga">Kayunga</option>
+                        <option value="Mpigi">Mpigi</option>
+                        <option value="Butambala">Butambala</option>
+                        <option value="Gomba">Gomba</option>
+                        <option value="Kalungu">Kalungu</option>
+                        <option value="Lwengo">Lwengo</option>
+                        <option value="Lyantonde">Lyantonde</option>
+                        <option value="Rakai">Rakai</option>
+                        <option value="Sembabule">Sembabule</option>
+                        <option value="Kalangala">Kalangala</option>
+                        <option value="Buvuma">Buvuma</option>
+                        <option value="Buikwe">Buikwe</option>
+                        <option value="Buyende">Buyende</option>
+                        <option value="Kamuli">Kamuli</option>
+                        <option value="Kaliro">Kaliro</option>
+                        <option value="Namutumba">Namutumba</option>
+                        <option value="Bugiri">Bugiri</option>
+                        <option value="Mayuge">Mayuge</option>
+                        <option value="Namayingo">Namayingo</option>
+                        <option value="Butaleja">Butaleja</option>
+                        <option value="Butebo">Butebo</option>
+                        <option value="Pallisa">Pallisa</option>
+                        <option value="Kibuku">Kibuku</option>
+                        <option value="Budaka">Budaka</option>
+                        <option value="Manafwa">Manafwa</option>
+                        <option value="Namisindwa">Namisindwa</option>
+                        <option value="Bududa">Bududa</option>
+                        <option value="Sironko">Sironko</option>
+                        <option value="Bulambuli">Bulambuli</option>
+                        <option value="Kapchorwa">Kapchorwa</option>
+                        <option value="Kween">Kween</option>
+                        <option value="Bukwo">Bukwo</option>
+                        <option value="Amuria">Amuria</option>
+                        <option value="Kaberamaido">Kaberamaido</option>
+                        <option value="Kapelebyong">Kapelebyong</option>
+                        <option value="Katakwi">Katakwi</option>
+                        <option value="Kumi">Kumi</option>
+                        <option value="Ngora">Ngora</option>
+                        <option value="Serere">Serere</option>
+                        <option value="Amolatar">Amolatar</option>
+                        <option value="Alebtong">Alebtong</option>
+                        <option value="Dokolo">Dokolo</option>
+                        <option value="Kwania">Kwania</option>
+                        <option value="Oyam">Oyam</option>
+                        <option value="Apac">Apac</option>
+                        <option value="Omoro">Omoro</option>
+                        <option value="Nwoya">Nwoya</option>
+                        <option value="Amuru">Amuru</option>
+                        <option value="Kitgum">Kitgum</option>
+                        <option value="Lamwo">Lamwo</option>
+                        <option value="Pader">Pader</option>
+                        <option value="Agago">Agago</option>
+                        <option value="Kotido">Kotido</option>
+                        <option value="Abim">Abim</option>
+                        <option value="Kaabong">Kaabong</option>
+                        <option value="Nabilatuk">Nabilatuk</option>
+                        <option value="Nakapiripirit">Nakapiripirit</option>
+                        <option value="Moroto">Moroto</option>
+                        <option value="Napak">Napak</option>
+                        <option value="Amudat">Amudat</option>
+                        <option value="Adjumani">Adjumani</option>
+                        <option value="Moyo">Moyo</option>
+                        <option value="Obongi">Obongi</option>
+                        <option value="Yumbe">Yumbe</option>
+                        <option value="Koboko">Koboko</option>
+                        <option value="Maracha">Maracha</option>
+                        <option value="Zombo">Zombo</option>
+                        <option value="Nebbi">Nebbi</option>
+                        <option value="Pakwach">Pakwach</option>
+                        <option value="Madi-Okollo">Madi-Okollo</option>
+                        <option value="Kikuube">Kikuube</option>
+                        <option value="Kagadi">Kagadi</option>
+                        <option value="Kibaale">Kibaale</option>
+                        <option value="Kakumiro">Kakumiro</option>
+                        <option value="Buliisa">Buliisa</option>
+                        <option value="Masindi">Masindi</option>
+                        <option value="Kiryandongo">Kiryandongo</option>
+                        <option value="Kyenjojo">Kyenjojo</option>
+                        <option value="Kyegegwa">Kyegegwa</option>
+                        <option value="Kamwenge">Kamwenge</option>
+                        <option value="Kitagwenda">Kitagwenda</option>
+                        <option value="Bunyangabu">Bunyangabu</option>
+                        <option value="Ntoroko">Ntoroko</option>
+                        <option value="Bundibugyo">Bundibugyo</option>
+                        <option value="Bushenyi">Bushenyi</option>
+                        <option value="Mitooma">Mitooma</option>
+                        <option value="Rubirizi">Rubirizi</option>
+                        <option value="Buhweju">Buhweju</option>
+                        <option value="Sheema">Sheema</option>
+                        <option value="Ntungamo">Ntungamo</option>
+                        <option value="Rukungiri">Rukungiri</option>
+                        <option value="Kanungu">Kanungu</option>
+                        <option value="Kisoro">Kisoro</option>
+                        <option value="Rubanda">Rubanda</option>
+                        <option value="Rukiga">Rukiga</option>
+                        <option value="Isingiro">Isingiro</option>
+                        <option value="Kiruhura">Kiruhura</option>
+                        <option value="Kazo">Kazo</option>
+                        <option value="Ibanda">Ibanda</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="text" id="dob" required placeholder="DD/MM/YYYY">
+                </div>
+                <div class="form-group">
+                    <label>Sex</label>
+                    <select id="sex" required>
+                        <option value="" disabled selected>Select Sex</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Network</label>
+                    <select id="network" required>
+                        <option value="" disabled selected>Select Network</option>
+                        <option value="MTN">MTN</option>
+                        <option value="Airtel">Airtel</option>
+                    </select>
+                </div>
+                <div class="form-group full">
+                    <label>Gmail (Optional)</label>
+                    <input type="email" id="gmail" placeholder="john@gmail.com">
+                </div>
+                <div class="form-group full">
+                    <label>Referral Code (Optional)</label>
+                    <input type="text" id="referral_code" placeholder="Referrer username">
+                </div>
+                <div class="form-group full">
+                    <label>Password</label>
+                    <div class="password-field">
+                        <input type="password" id="password" required placeholder="••••••••">
+                        <button type="button" class="toggle-password" aria-label="Show password">Show</button>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn">Register Account</button>
+        </form>
+        <div class="login-link">
+            Already have an account? <a href="index.html">Login here</a>
+        </div>
+    </div>
+
+    <script>
+        const passwordInput = document.getElementById('password');
+        const togglePasswordBtn = document.querySelector('.toggle-password');
+
+        togglePasswordBtn.addEventListener('click', () => {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            togglePasswordBtn.textContent = isPassword ? 'Hide' : 'Show';
+            togglePasswordBtn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+        });
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                username: document.getElementById('username').value,
+                phone: document.getElementById('phone').value,
+                first_name: document.getElementById('first_name').value,
+                second_name: document.getElementById('second_name').value,
+                district: document.getElementById('district').value,
+                dob: document.getElementById('dob').value,
+                sex: document.getElementById('sex').value,
+                network: document.getElementById('network').value,
+                gmail: document.getElementById('gmail').value,
+                referral_code: document.getElementById('referral_code').value,
+                password: document.getElementById('password').value
+            };
+
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Registration successful! Please login.');
+                    window.location.href = 'index.html';
+                } else {
+                    document.getElementById('error-msg').innerText = data.error;
+                }
+            } catch (err) {
+                document.getElementById('error-msg').innerText = 'Registration error occurred.';
+            }
+        });
+    </script>
+</body>
+</html>

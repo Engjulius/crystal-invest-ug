@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crystal Invest UG - User Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            padding: 20px;
+            margin: 15px auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #38bdf8, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .balances-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .balance-box h3 {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-bottom: 5px;
+        }
+
+        .balance-box .amount {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #38bdf8;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            margin: 25px 0 15px 0;
+            color: #e2e8f0;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .package-card, .mine-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #10b981, #047857);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .btn-deposit { background: linear-gradient(135deg, #10b981, #059669); }
+        .btn-withdraw { background: linear-gradient(135deg, #0ea5e9, #6366f1); }
+        .btn-show-more { background: linear-gradient(135deg, #0ea5e9, #0284c7); width: auto; padding: 8px 25px; margin: 15px auto 0 auto; display: none; }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th { color: #cbd5e1; background: rgba(255, 255, 255, 0.02); }
+        td { color: #f1f5f9; }
+
+        .table-responsive { overflow-x: auto; }
+
+        .alert {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        .alert-error { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; }
+        .alert-success { background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #6ee7b7; }
+    </style>
+</head>
+<body>
+
+    <header>
+
+        <div class="logo">💎 Crystal Invest UG</div>
+        <!-- Add this inside your header's .user-info or nav section in dashboard.html -->
+<a href="refer-earn.html" style="background: rgba(56, 189, 248, 0.2); border: 1px solid #38bdf8; color: #38bdf8; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">Refer & Earn</a>
+        <div class="user-info">
+            <span id="welcome-username" style="font-weight: 600; color: #38bdf8;"></span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        
+    </header>
+
+    <div class="container">
+        <div id="msg-box" class="alert"></div>
+
+        <!-- Balances Section -->
+        <div class="balances-grid">
+            <div class="glass-card balance-box" style="margin:0;">
+                <h3>Main Balance (Capital / Deposits)</h3>
+                <div class="amount" id="main-balance">0 UGX</div>
+            </div>
+            <div class="glass-card balance-box" style="margin:0;">
+                <h3>Withdrawable Profit Balance</h3>
+                <div class="amount" id="profit-balance" style="color: #34d399;">0 UGX</div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <!-- Deposit Section -->
+            <div class="glass-card" style="margin:0;">
+                <h3 style="margin-bottom: 10px; color: #e2e8f0;">Top Up Main Balance (Deposit)</h3>
+                <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 10px;">AIRTEL Merchant ID: <b>7020120</b> & MTN Merchant ID: <b>7020120</b> </p>
+                <form id="deposit-form">
+                    <input type="number" id="deposit-amount" placeholder="Amount (UGX)" required>
+                    <input type="text" id="deposit-txref" placeholder="Mobile Money Transaction ID" required>
+                    <button type="submit" class="btn btn-deposit">Submit Deposit Request</button>
+                </form>
+            </div>
+
+            <!-- Withdrawal Section -->
+            <div class="glass-card" style="margin:0;">
+                <h3 style="margin-bottom: 10px; color: #e2e8f0;">Request Profit Withdrawal (8 AM – 8 PM)</h3>
+                <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 10px;">Cash out your daily harvested profits securely.</p>
+                <form id="withdraw-form">
+                    <input type="number" id="withdraw-amount" placeholder="Amount to withdraw (UGX)" required style="margin-bottom: 22px;">
+                    <button type="submit" class="btn btn-withdraw">Submit Withdrawal Request</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Active Mines Section -->
+        <h2 class="section-title">Your Active Mining Rigs</h2>
+        <div id="active-mines-container" class="grid-2">
+            <p style="color: #94a3b8;">Loading active mines...</p>
+        </div>
+
+        <!-- Available Packages Section -->
+        <h2 class="section-title">Deploy New Crystal Mine</h2>
+        <div id="packages-container" class="grid-2">
+            <p style="color: #94a3b8;">Loading packages...</p>
+        </div>
+
+        <!-- Transaction History Section -->
+        <h2 class="section-title">Transaction Ledger</h2>
+        <div class="glass-card">
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Description</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactions-tbody">
+                        <tr><td colspan="5" style="text-align:center; color:#94a3b8;">Loading transactions...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="text-align: center;">
+                <button id="showMoreBtn" class="btn btn-show-more">Show More</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const userId = localStorage.getItem('user_id');
+        if (!userId) {
+            window.location.href = 'login.html';
+        }
+
+        let allTransactions = [];
+        let visibleCount = 5;
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        function showAlert(message, isSuccess = false) {
+            const box = document.getElementById('msg-box');
+            box.className = `alert ${isSuccess ? 'alert-success' : 'alert-error'}`;
+            box.innerText = message;
+            box.style.display = 'block';
+            setTimeout(() => { box.style.display = 'none'; }, 5000);
+        }
+
+        async function loadUserData() {
+            try {
+                const res = await fetch(`/api/user/${userId}`);
+                const user = await res.json();
+                if (user.error) { logout(); return; }
+                document.getElementById('welcome-username').innerText = `@${user.username}`;
+                document.getElementById('main-balance').innerText = `${user.balance.toLocaleString()} UGX`;
+                document.getElementById('profit-balance').innerText = `${user.withdrawable_profit.toLocaleString()} UGX`;
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadActiveMines() {
+            try {
+                const res = await fetch(`/api/user-packages/${userId}`);
+                const mines = await res.json();
+                const container = document.getElementById('active-mines-container');
+                container.innerHTML = '';
+                if (mines.length === 0) {
+                    container.innerHTML = '<p style="color: #94a3b8;">No active mining rigs deployed yet.</p>';
+                    return;
+                }
+                mines.forEach(mine => {
+                    const card = document.createElement('div');
+                    card.className = 'mine-card';
+                    card.innerHTML = `
+                        <div>
+                            <h3 style="color: #38bdf8; margin-bottom: 5px;">💎 ${mine.package_name}</h3>
+                            <p style="font-size: 0.9rem; color: #cbd5e1;">Capital: <b>${mine.capital.toLocaleString()} UGX</b></p>
+                            <p style="font-size: 0.9rem; color: #cbd5e1;">Daily Yield: <b>${mine.daily_yield_percent}%</b></p>
+                            <p style="font-size: 0.9rem; color: #cbd5e1;">Status: <span style="color: #34d399;">${mine.status}</span></p>
+                            <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 5px;">Ends: ${new Date(mine.end_date).toLocaleString()}</p>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadPackages() {
+            try {
+                const res = await fetch('/api/packages');
+                const packages = await res.json();
+                const container = document.getElementById('packages-container');
+                container.innerHTML = '';
+                packages.forEach(pkg => {
+                    const dailyProfit = (pkg.capital * (pkg.daily_yield_percent / 100)).toLocaleString();
+                    const card = document.createElement('div');
+                    card.className = 'package-card';
+                    card.innerHTML = `
+                        <div>
+                            <h3 style="color: #f1f5f9; margin-bottom: 5px;">💎 ${pkg.name}</h3>
+                            <p style="font-size: 1.3rem; font-weight: 700; color: #38bdf8; margin-bottom: 10px;">${pkg.capital.toLocaleString()} UGX</p>
+                            <p style="font-size: 0.9rem; color: #94a3b8;">Daily Yield: <span style="color:#e2e8f0;">${pkg.daily_yield_percent}% (${dailyProfit} UGX/day)</span></p>
+                            <p style="font-size: 0.9rem; color: #94a3b8;">Duration: <span style="color:#e2e8f0;">${pkg.duration_days} Days</span></p>
+                        </div>
+                        <button class="btn" onclick="buyPackage(${pkg.id})">Deploy Mine</button>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadTransactions() {
+            try {
+                const res = await fetch(`/api/transactions/${userId}`);
+                allTransactions = await res.json();
+                renderTransactionLedger();
+            } catch (err) { console.error(err); }
+        }
+
+        function renderTransactionLedger() {
+            const tbody = document.getElementById('transactions-tbody');
+            tbody.innerHTML = '';
+            if (allTransactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#94a3b8;">No transactions recorded yet.</td></tr>';
+                document.getElementById('showMoreBtn').style.display = 'none';
+                return;
+            }
+
+            const transactionsToShow = allTransactions.slice(0, visibleCount);
+            transactionsToShow.forEach(t => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>#${t.id}</td>
+                    <td><span style="color: #38bdf8; font-weight:600;">${t.type}</span></td>
+                    <td><b>${t.amount.toLocaleString()} UGX</b></td>
+                    <td>${t.description}</td>
+                    <td>${new Date(t.timestamp).toLocaleString()}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            const showMoreBtn = document.getElementById('showMoreBtn');
+            if (showMoreBtn) {
+                if (visibleCount < allTransactions.length) {
+                    showMoreBtn.style.display = 'inline-block';
+                } else {
+                    showMoreBtn.style.display = 'none';
+                }
+            }
+        }
+
+        document.getElementById('showMoreBtn').addEventListener('click', () => {
+            visibleCount += 5;
+            renderTransactionLedger();
+        });
+
+        async function buyPackage(packageId) {
+            if (!confirm('Are you sure you want to deploy capital into this crystal mine?')) return;
+            try {
+                const res = await fetch('/api/buy-package', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, package_id: packageId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showAlert(data.message, true);
+                    loadUserData();
+                    loadActiveMines();
+                    loadTransactions();
+                } else {
+                    showAlert(data.error, false);
+                }
+            } catch (err) { showAlert('Error processing purchase.', false); }
+        }
+
+        document.getElementById('deposit-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('deposit-amount').value);
+            const tx_ref = document.getElementById('deposit-txref').value;
+
+            try {
+                const res = await fetch('/api/deposit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, amount, tx_ref })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showAlert(data.message, true);
+                    document.getElementById('deposit-amount').value = '';
+                    document.getElementById('deposit-txref').value = '';
+                } else {
+                    showAlert(data.error, false);
+                }
+            } catch (err) { showAlert('Error submitting deposit.', false); }
+        });
+
+        document.getElementById('withdraw-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('withdraw-amount').value);
+
+            try {
+                const res = await fetch('/api/withdraw', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, amount, type: 'PROFIT' })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showAlert(data.message, true);
+                    document.getElementById('withdraw-amount').value = '';
+                    loadUserData();
+                    loadTransactions();
+                } else {
+                    showAlert(data.error, false);
+                }
+            } catch (err) { showAlert('Error submitting withdrawal request.', false); }
+        });
+
+        loadUserData();
+        loadActiveMines();
+        loadPackages();
+        loadTransactions();
+    </script>
+</body>
+</html>

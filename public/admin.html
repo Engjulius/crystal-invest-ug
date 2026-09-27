@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crystal Invest UG - Admin Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            padding: 20px;
+            margin: 15px auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #f43f5e, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        #login-screen {
+            max-width: 400px;
+            margin: 80px auto;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        input:focus { outline: none; border-color: #fbbf24; }
+
+        .btn {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-approve { background: #10b981; padding: 6px 12px; width: auto; font-size: 0.85rem; }
+        .btn-reject { background: #ef4444; padding: 6px 12px; width: auto; font-size: 0.85rem; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .stat-box h3 { font-size: 0.85rem; color: #94a3b8; margin-bottom: 5px; }
+        .stat-box .val { font-size: 1.4rem; font-weight: 700; color: #fbbf24; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th { color: #cbd5e1; background: rgba(255, 255, 255, 0.02); }
+        td { color: #f1f5f9; }
+
+        .table-responsive { overflow-x: auto; }
+
+        #admin-panel { display: none; }
+        #error-msg { color: #f87171; margin-bottom: 10px; font-size: 0.9rem; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">🛡️ Crystal Invest Admin Portal</div>
+        <button id="logout-btn" style="display:none;" class="btn btn-reject" onclick="adminLogout()">Logout</button>
+    </header>
+
+    <div class="container">
+        <!-- Admin Login Screen -->
+        <div id="login-screen" class="glass-card">
+            <h2 style="text-align: center; margin-bottom: 20px; color: #fbbf24;">Admin Login</h2>
+            <div id="error-msg"></div>
+            <form id="admin-login-form">
+                <input type="text" id="admin-user" placeholder="Admin Username" required>
+                <input type="password" id="admin-pass" placeholder="Admin Password" required>
+                <button type="submit" class="btn">Access Control Panel</button>
+            </form>
+        </div>
+
+        <!-- Admin Control Panel -->
+        <div id="admin-panel">
+            <!-- First Row Stats -->
+            <div class="stats-grid">
+                <div class="glass-card stat-box" style="margin:0;">
+                    <h3>Total User Balances</h3>
+                    <div class="val" id="stat-balances">0 UGX</div>
+                </div>
+                <div class="glass-card stat-box" style="margin:0;">
+                    <h3>Total Withdrawable Profits</h3>
+                    <div class="val" id="stat-profits" style="color: #34d399;">0 UGX</div>
+                </div>
+                <div class="glass-card stat-box" style="margin:0;">
+                    <h3>Active Mining Rigs</h3>
+                    <div class="val" id="stat-mines" style="color: #38bdf8;">0</div>
+                </div>
+                <div class="glass-card stat-box" style="margin:0;">
+                    <h3>Active Capital Deployed</h3>
+                    <div class="val" id="stat-capital">0 UGX</div>
+                </div>
+            </div>
+
+            <!-- Second Row Stats (Users & Demographics) -->
+            <div class="stats-grid" style="margin-bottom: 25px;">
+                <div class="glass-card stat-box" style="margin:0;">
+                    <h3>Total Registered Users</h3>
+                    <div class="val" id="stat-total-users" style="color: #c084fc;">0</div>
+                </div>
+                <div class="glass-card stat-box" style="margin:0;">
+                    <h3>Total Male Users</h3>
+                    <div class="val" id="stat-male-users" style="color: #60a5fa;">0</div>
+                </div>
+                <div class="glass-card stat-box" style="margin:0;">
+                    <h3>Total Female Users</h3>
+                    <div class="val" id="stat-female-users" style="color: #f472b6;">0</div>
+                </div>
+                <div class="glass-card stat-box" style="margin:0;">
+                    <h3>Online Users</h3>
+                    <div class="val" id="stat-online-users" style="color: #4ade80;">1</div>
+                </div>
+            </div>
+
+            <!-- Deposit Requests Management -->
+            <div class="glass-card">
+                <h3 style="margin-bottom: 15px; color: #f8fafc;">Deposit Requests Management</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User</th>
+                                <th>Phone</th>
+                                <th>Amount</th>
+                                <th>TX ID5</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deposits-tbody">
+                            <tr><td colspan="8" style="text-align:center; color:#94a3b8;">Loading deposits...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Withdrawal Requests Management -->
+            <div class="glass-card">
+                <h3 style="margin-bottom: 15px; color: #f8fafc;">Withdrawal Requests Management</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User</th>
+                                <th>Phone</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="withdrawals-tbody">
+                            <tr><td colspan="7" style="text-align:center; color:#94a3b8;">Loading requests...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Active Packages Management -->
+            <div class="glass-card">
+                <h3 style="margin-bottom: 15px; color: #f8fafc;">Active Mining Rigs & Packages Management</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User</th>
+                                <th>Phone</th>
+                                <th>Package</th>
+                                <th>Capital</th>
+                                <th>Progress</th>
+                                <th>Status</th>
+                                <th>Start Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminPackagesTable">
+                            <tr><td colspan="8" style="text-align: center; color:#94a3b8;">Loading packages...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Show More Rigs Button Container -->
+                <div style="text-align: center; margin-top: 20px;">
+                    <button id="showMoreRigsBtn" onclick="loadMoreRigs()" style="display: none; padding: 10px 20px; background: linear-gradient(135deg, #6c5ce7, #5b4be2); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                        Show More Rigs
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentOffset = 0;
+        const limit = 10;
+
+        if (localStorage.getItem('admin_logged_in') === 'true') {
+            showPanel();
+        }
+
+        document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('admin-user').value;
+            const password = document.getElementById('admin-pass').value;
+
+            try {
+                const res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('admin_logged_in', 'true');
+                    showPanel();
+                } else {
+                    document.getElementById('error-msg').innerText = data.error;
+                }
+            } catch (err) {
+                document.getElementById('error-msg').innerText = 'Login error.';
+            }
+        });
+
+        function showPanel() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'block';
+            document.getElementById('logout-btn').style.display = 'block';
+            loadAdminData();
+            loadAdminPackages(false);
+        }
+
+        function adminLogout() {
+            localStorage.removeItem('admin_logged_in');
+            window.location.reload();
+        }
+
+        async function loadAdminData() {
+            try {
+                const statsRes = await fetch('/api/admin/stats');
+                const stats = await statsRes.json();
+                document.getElementById('stat-balances').innerText = `${(stats.total_balances || 0).toLocaleString()} UGX`;
+                document.getElementById('stat-profits').innerText = `${(stats.total_profits || 0).toLocaleString()} UGX`;
+                document.getElementById('stat-mines').innerText = stats.active_mines || 0;
+                document.getElementById('stat-capital').innerText = `${(stats.active_capital || 0).toLocaleString()} UGX`;
+                
+                // New User Stats
+                document.getElementById('stat-total-users').innerText = stats.total_users || 0;
+                document.getElementById('stat-male-users').innerText = stats.total_males || 0;
+                document.getElementById('stat-female-users').innerText = stats.total_females || 0;
+                document.getElementById('stat-online-users').innerText = stats.online_users || 1;
+
+                // Load Deposits
+                const depRes = await fetch('/api/admin/deposits');
+                const deposits = await depRes.json();
+                const depTbody = document.getElementById('deposits-tbody');
+                depTbody.innerHTML = '';
+                if (deposits.length === 0) {
+                    depTbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#94a3b8;">No deposit requests found.</td></tr>';
+                } else {
+                    deposits.forEach(d => {
+                        const tr = document.createElement('tr');
+                        let statusColor = '#fbbf24';
+                        if (d.status === 'Approved') statusColor = '#34d399';
+                        if (d.status === 'Rejected') statusColor = '#ef4444';
+
+                        tr.innerHTML = `
+                            <td>#${d.id}</td>
+                            <td>@${d.username}</td>
+                            <td>${d.phone}</td>
+                            <td><b>${d.amount.toLocaleString()} UGX</b></td>
+                            <td><code>${d.tx_ref}</code></td>
+                            <td><span style="color: ${statusColor}; font-weight:600;">${d.status}</span></td>
+                            <td>${new Date(d.requested_at).toLocaleString()}</td>
+                            <td>
+                                ${d.status === 'Pending' ? `
+                                    <button class="btn btn-approve" onclick="updateDeposit(${d.id}, 'Approved')">Approve</button>
+                                    <button class="btn btn-reject" onclick="updateDeposit(${d.id}, 'Rejected')">Reject</button>
+                                ` : 'Processed'}
+                            </td>
+                        `;
+                        depTbody.appendChild(tr);
+                    });
+                }
+
+                // Load Withdrawals
+                const wdRes = await fetch('/api/admin/withdrawals');
+                const withdrawals = await wdRes.json();
+                const tbody = document.getElementById('withdrawals-tbody');
+                tbody.innerHTML = '';
+                if (withdrawals.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#94a3b8;">No withdrawal requests found.</td></tr>';
+                } else {
+                    withdrawals.forEach(w => {
+                        const tr = document.createElement('tr');
+                        let statusColor = '#fbbf24';
+                        if (w.status === 'Approved') statusColor = '#34d399';
+                        if (w.status === 'Rejected') statusColor = '#ef4444';
+
+                        tr.innerHTML = `
+                            <td>#${w.id}</td>
+                            <td>@${w.username}</td>
+                            <td>${w.phone}</td>
+                            <td><b>${w.amount.toLocaleString()} UGX</b></td>
+                            <td><span style="color: ${statusColor}; font-weight:600;">${w.status}</span></td>
+                            <td>${new Date(w.requested_at).toLocaleString()}</td>
+                            <td>
+                                ${w.status === 'Pending' ? `
+                                    <button class="btn btn-approve" onclick="updateWithdrawal(${w.id}, 'Approved')">Approve</button>
+                                    <button class="btn btn-reject" onclick="updateWithdrawal(${w.id}, 'Rejected')">Reject</button>
+                                ` : 'Processed'}
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function updateDeposit(id, status) {
+            if (!confirm(`Mark deposit #${id} as ${status}?`)) return;
+            try {
+                const res = await fetch('/api/admin/deposit-action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ deposit_id: id, status })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    loadAdminData();
+                } else {
+                    alert(data.error);
+                }
+            } catch (err) { alert('Error updating deposit status.'); }
+        }
+
+        async function updateWithdrawal(id, status) {
+            if (!confirm(`Mark withdrawal #${id} as ${status}?`)) return;
+            try {
+                const res = await fetch('/api/admin/withdrawal-action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ withdrawal_id: id, status })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    loadAdminData();
+                } else {
+                    alert(data.error);
+                }
+            } catch (err) { alert('Error updating withdrawal status.'); }
+        }
+
+        function loadAdminPackages(append = false) {
+            if (!append) {
+                currentOffset = 0;
+            }
+
+            fetch(`/api/admin/user-packages?limit=${limit}&offset=${currentOffset}`)
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.getElementById('adminPackagesTable');
+                    const packages = data.packages || [];
+
+                    if (!append && packages.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color:#94a3b8;">No packages found.</td></tr>`;
+                        document.getElementById('showMoreRigsBtn').style.display = 'none';
+                        return;
+                    }
+
+                    const rowsHtml = packages.map(pkg => `
+                        <tr>
+                            <td>#${pkg.id}</td>
+                            <td>@${pkg.username}</td>
+                            <td>${pkg.phone}</td>
+                            <td><b>${pkg.package_name}</b></td>
+                            <td>${pkg.capital.toLocaleString()} UGX</td>
+                            <td>${pkg.days_harvested} / ${pkg.duration_days} Days</td>
+                            <td><span style="color: ${pkg.status === 'Ongoing' ? '#4ade80' : '#f87171'}; font-weight: bold;">${pkg.status}</span></td>
+                            <td>${new Date(pkg.start_date).toLocaleString()}</td>
+                        </tr>
+                    `).join('');
+
+                    if (append) {
+                        tbody.innerHTML += rowsHtml;
+                    } else {
+                        tbody.innerHTML = rowsHtml;
+                    }
+
+                    // Toggle 'Show More' button visibility
+                    const showMoreBtn = document.getElementById('showMoreRigsBtn');
+                    if (data.hasMore) {
+                        showMoreBtn.style.display = 'inline-block';
+                    } else {
+                        showMoreBtn.style.display = 'none';
+                    }
+                })
+                .catch(err => console.error('Error loading admin packages:', err));
+        }
+
+        function loadMoreRigs() {
+            currentOffset += limit;
+            loadAdminPackages(true);
+        }
+    </script>
+</body>
+</html>
