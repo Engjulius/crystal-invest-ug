@@ -333,7 +333,7 @@
                         if (d.status === 'Rejected') statusColor = '#ef4444';
 
                         tr.innerHTML = `
-                            <td>#${d.id}</td>
+                            <td>#${d._id.slice(-6)}</td>
                             <td>@${d.username}</td>
                             <td>${d.phone}</td>
                             <td><b>${d.amount.toLocaleString()} UGX</b></td>
@@ -342,8 +342,8 @@
                             <td>${new Date(d.requested_at).toLocaleString()}</td>
                             <td>
                                 ${d.status === 'Pending' ? `
-                                    <button class="btn btn-approve" onclick="updateDeposit(${d.id}, 'Approved')">Approve</button>
-                                    <button class="btn btn-reject" onclick="updateDeposit(${d.id}, 'Rejected')">Reject</button>
+                                    <button class="btn btn-approve" onclick="updateDeposit('${d._id}', 'Approved')">Approve</button>
+                                    <button class="btn btn-reject" onclick="updateDeposit('${d._id}', 'Rejected')">Reject</button>
                                 ` : 'Processed'}
                             </td>
                         `;
@@ -366,7 +366,7 @@
                         if (w.status === 'Rejected') statusColor = '#ef4444';
 
                         tr.innerHTML = `
-                            <td>#${w.id}</td>
+                            <td>#${w._id.slice(-6)}</td>
                             <td>@${w.username}</td>
                             <td>${w.phone}</td>
                             <td><b>${w.amount.toLocaleString()} UGX</b></td>
@@ -374,8 +374,8 @@
                             <td>${new Date(w.requested_at).toLocaleString()}</td>
                             <td>
                                 ${w.status === 'Pending' ? `
-                                    <button class="btn btn-approve" onclick="updateWithdrawal(${w.id}, 'Approved')">Approve</button>
-                                    <button class="btn btn-reject" onclick="updateWithdrawal(${w.id}, 'Rejected')">Reject</button>
+                                    <button class="btn btn-approve" onclick="updateWithdrawal('${w._id}', 'Approved')">Approve</button>
+                                    <button class="btn btn-reject" onclick="updateWithdrawal('${w._id}', 'Rejected')">Reject</button>
                                 ` : 'Processed'}
                             </td>
                         `;
@@ -438,7 +438,7 @@
 
                     const rowsHtml = packages.map(pkg => `
                         <tr>
-                            <td>#${pkg.id}</td>
+                            <td>#${pkg._id ? pkg._id.slice(-6) : pkg.id}</td>
                             <td>@${pkg.username}</td>
                             <td>${pkg.phone}</td>
                             <td><b>${pkg.package_name}</b></td>
