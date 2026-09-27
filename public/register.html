@@ -360,6 +360,25 @@
                 document.getElementById('error-msg').innerText = 'Registration error occurred.';
             }
         });
+
+        // reffereral code auto-fill logic
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        // Checks for both ?rel= or ?ref= in the link
+        const refCode = urlParams.get('rel') || urlParams.get('ref');
+        
+        if (refCode) {
+            // Replace 'referral_code' with whatever your input's ID or name attribute is
+            const referralInput = document.getElementById('referral_code') || document.querySelector('input[name="referral_code"]');
+            
+            if (referralInput) {
+                referralInput.value = refCode;
+                // Optional: makes the field read-only so users don't accidentally edit it
+                referralInput.readOnly = true; 
+            }
+        }
+    });
+
     </script>
 </body>
 </html>
