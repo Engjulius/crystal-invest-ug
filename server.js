@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const cron = require('node-cron');
-const mongoose = require('mongoose'); // Ensure mongoose is imported for ObjectId checks
+const mongoose = require('mongoose');
 const { User, Package, UserPackage, Transaction, Deposit, Withdrawal } = require('./database');
 
 const app = express();
@@ -27,7 +27,6 @@ function trackActivity(userId) {
     }
 }
 
-// Clean up stale sessions every minute
 setInterval(() => {
     const now = Date.now();
     for (let [userId, timestamp] of activeUsers.entries()) {
@@ -39,7 +38,6 @@ setInterval(() => {
 
 // ==================== PUBLIC API ROUTES ====================
 
-// 1. Get Packages
 app.get('/api/packages', async (req, res) => {
     try {
         const packages = await Package.find({});
@@ -49,7 +47,6 @@ app.get('/api/packages', async (req, res) => {
     }
 });
 
-// 2. User Registration
 app.post('/api/register', async (req, res) => {
     try {
         const { username, phone, password, first_name, second_name, district, dob, gmail, sex, network, referral_code } = req.body;
@@ -90,7 +87,6 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
-// 3. User Login
 app.post('/api/login', async (req, res) => {
     try {
         const { phone, password } = req.body;
@@ -111,7 +107,6 @@ app.post('/api/login', async (req, res) => {
 
 // ==================== USER DASHBOARD & ACTION APIS ====================
 
-// 4. Get User Profile & Balances
 app.get('/api/user/:id', async (req, res) => {
     try {
         trackActivity(req.params.id);
@@ -123,7 +118,6 @@ app.get('/api/user/:id', async (req, res) => {
     }
 });
 
-// 5. Get User Active Packages
 app.get('/api/user-packages/:id', async (req, res) => {
     try {
         trackActivity(req.params.id);
@@ -134,7 +128,6 @@ app.get('/api/user-packages/:id', async (req, res) => {
     }
 });
 
-// 6. Get User Transaction History
 app.get('/api/transactions/:id', async (req, res) => {
     try {
         trackActivity(req.params.id);
@@ -145,7 +138,6 @@ app.get('/api/transactions/:id', async (req, res) => {
     }
 });
 
-// 7. Request Deposit
 app.post('/api/deposit', async (req, res) => {
     try {
         const { user_id, amount, tx_ref } = req.body;
@@ -171,7 +163,7 @@ app.post('/api/deposit', async (req, res) => {
     }
 });
 
-// 8. Buy Mining Package (Robust Lookup supporting ObjectId, custom ID, and Name)
+// Buy Mining Package (Robust Lookup supporting ObjectId, custom ID, and Name)
 app.post('/api/buy-package', async (req, res) => {
     try {
         const { user_id, package_id } = req.body;
@@ -196,19 +188,16 @@ app.post('/api/buy-package', async (req, res) => {
         if (!user) return res.status(404).json({ error: 'User not found.' });
         if (user.balance < pkg.capital) return res.status(400).json({ error: 'Insufficient main balance. Please top up.' });
 
-        // Check total active rigs across all packages (Max 10 total)
         const totalActiveCount = await UserPackage.countDocuments({ user_id, status: 'Ongoing' });
         if (totalActiveCount >= 10) {
             return res.status(400).json({ error: 'Max limit reached: You can only have a maximum of 10 active mining rigs/ledges total.' });
         }
 
-        // Check active instances per specific tier (Max 3 per tier)
         const activeTierCount = await UserPackage.countDocuments({ user_id, package_name: pkg.name, status: 'Ongoing' });
         if (activeTierCount >= 3) {
             return res.status(400).json({ error: 'Max limit reached: Only 3 active instances allowed per package tier.' });
         }
 
-        // Deduct balance and create package
         user.balance -= pkg.capital;
         await user.save();
 
@@ -235,7 +224,6 @@ app.post('/api/buy-package', async (req, res) => {
     }
 });
 
-// 9. Request Withdrawal (Restricted to 8:00 AM - 8:00 PM)
 app.post('/api/withdraw', async (req, res) => {
     try {
         const { user_id, amount, type } = req.body;
@@ -290,7 +278,6 @@ app.post('/api/admin/login', (req, res) => {
     }
 });
 
-// Admin Deposits Management
 app.get('/api/admin/deposits', async (req, res) => {
     try {
         const deposits = await Deposit.find({}).sort({ requested_at: -1 });
@@ -300,7 +287,6 @@ app.get('/api/admin/deposits', async (req, res) => {
     }
 });
 
-// Admin Deposit Approval (Triggers 10% First Deposit Referral Bonus)
 app.post('/api/admin/deposit-action', async (req, res) => {
     try {
         const { deposit_id, status } = req.body;
@@ -325,11 +311,10 @@ app.post('/api/admin/deposit-action', async (req, res) => {
                     description: `Approved Deposit Ref: ${dep.tx_ref}`
                 });
 
-                // Check if this is the user's FIRST approved deposit
                 const depositCreditCount = await Transaction.countDocuments({ user_id: dep.user_id, type: 'DEPOSIT_CREDIT' });
 
                 if (depositCreditCount === 1 && user.referred_by && user.referred_by.trim() !== '') {
-                    const bonusAmount = dep.amount * 0.10; // 10% commission
+                    const bonusAmount = dep.amount * 0.10;
 
                     const referrer = await User.findOne({ username: user.referred_by });
                     if (referrer) {
@@ -373,7 +358,6 @@ app.post('/api/admin/withdrawal-action', async (req, res) => {
     }
 });
 
-// Admin Stats Route
 app.get('/api/admin/stats', async (req, res) => {
     try {
         const userAgg = await User.aggregate([
@@ -413,7 +397,6 @@ app.get('/api/admin/stats', async (req, res) => {
     }
 });
 
-// Admin User Packages Management (Paginated: Default 10 per load)
 app.get('/api/admin/user-packages', async (req, res) => {
     try {
         const limit = parseInt(req.query.limit) || 10;
@@ -438,7 +421,6 @@ app.get('/api/admin/user-packages', async (req, res) => {
 
 // ==================== AUTOMATED CRON: 24-HOUR ROLLING HARVEST ====================
 cron.schedule('0 * * * *', () => {
-    console.log('[CRON] Checking 24-hour package harvest cycles...');
     processAutomaticProfits();
 });
 
@@ -463,7 +445,6 @@ async function processAutomaticProfits() {
                 const newDaysHarvested = pkg.days_harvested + 1;
                 const newStatus = newDaysHarvested >= pkg.duration_days ? 'Completed' : 'Ongoing';
 
-                // Credit User
                 const user = await User.findById(pkg.user_id);
                 if (user) {
                     user.withdrawable_profit += dailyProfit;
@@ -471,13 +452,11 @@ async function processAutomaticProfits() {
                     await user.save();
                 }
 
-                // Update Package
                 pkg.days_harvested = newDaysHarvested;
                 pkg.last_harvest_date = now;
                 pkg.status = newStatus;
                 await pkg.save();
 
-                // Log Transaction
                 await Transaction.create({
                     user_id: pkg.user_id,
                     type: 'Automatic Yield',
@@ -491,7 +470,6 @@ async function processAutomaticProfits() {
     }
 }
 
-// Get user referrals and statistics for refer-earn.html
 app.get('/api/user-referrals/:id', async (req, res) => {
     try {
         const userId = req.params.id;
