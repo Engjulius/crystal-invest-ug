@@ -170,14 +170,12 @@
 <body>
 
     <header>
-
         <div class="logo">💎 Crystal Invest UG</div>
         <a href="refer-earn.html" style="background: rgba(56, 189, 248, 0.2); border: 1px solid #38bdf8; color: #38bdf8; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">Refer & Earn</a>
         <div class="user-info">
             <span id="welcome-username" style="font-weight: 600; color: #38bdf8;"></span>
             <button class="logout-btn" onclick="logout()">Logout</button>
         </div>
-        
     </header>
 
     <div class="container">
@@ -332,7 +330,7 @@
                             <p style="font-size: 0.9rem; color: #94a3b8;">Daily Yield: <span style="color:#e2e8f0;">${pkg.daily_yield_percent}% (${dailyProfit} UGX/day)</span></p>
                             <p style="font-size: 0.9rem; color: #94a3b8;">Duration: <span style="color:#e2e8f0;">${pkg.duration_days} Days</span></p>
                         </div>
-                        <button class="btn" onclick="buyPackage('${pkg._id || pkg.id}')">Deploy Mine</button>
+                        <button class="btn" onclick="buyPackage('${pkg._id || pkg.id || pkg.name}')">Deploy Mine</button>
                     `;
                     container.appendChild(card);
                 });
@@ -360,7 +358,7 @@
             transactionsToShow.forEach(t => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>#${t.id}</td>
+                    <td>#${t.id || '---'}</td>
                     <td><span style="color: #38bdf8; font-weight:600;">${t.type}</span></td>
                     <td><b>${t.amount.toLocaleString()} UGX</b></td>
                     <td>${t.description}</td>
