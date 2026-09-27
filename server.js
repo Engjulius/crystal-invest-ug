@@ -351,7 +351,30 @@ app.get('/api/admin/withdrawals', async (req, res) => {
 app.post('/api/admin/withdrawal-action', async (req, res) => {
     try {
         const { withdrawal_id, status } = req.body;
-        await Withdrawal.findByIdAndUpdate(withdrawal_id, { status });
+
+        const withdrawal = await Withdrawal.findById(withdrawal_id);
+        if (!withdrawal) return res.status(404).json({ error: 'Withdrawal request not found.' });
+
+        const previousStatus = withdrawal.status;
+        withdrawal.status = status;
+        await withdrawal.save();
+
+        // If marked as Rejected, refund directly back to withdrawable profit
+        if (status === 'Rejected' && previousStatus !== 'Rejected') {
+            const user = await User.findById(withdrawal.user_id);
+            if (user) {
+                user.withdrawable_profit += withdrawal.amount;
+                await user.save();
+
+                await Transaction.create({
+                    user_id: withdrawal.user_id,
+                    type: 'WITHDRAWAL_REFUND',
+                    amount: withdrawal.amount,
+                    description: `Refund for rejected withdrawal request`
+                });
+            }
+        }
+
         res.json({ success: true, message: `Withdrawal marked as ${status}` });
     } catch (err) {
         res.status(500).json({ error: err.message });
