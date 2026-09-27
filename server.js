@@ -105,6 +105,51 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+// Secure Password Reset using Last Transaction ID (tx_ref) Verification
+app.post('/api/forgot-password', async (req, res) => {
+    try {
+        const { phone, tx_ref, new_password } = req.body;
+
+        const phoneStr = phone ? phone.trim() : '';
+        const txRefStr = tx_ref ? tx_ref.trim() : '';
+
+        if (!phoneStr || !txRefStr || !new_password) {
+            return res.status(400).json({ error: 'Please provide your phone number, transaction ID, and new password.' });
+        }
+
+        const user = await User.findOne({ phone: phoneStr });
+        if (!user) {
+            return res.status(404).json({ error: 'No account found with this phone number.' });
+        }
+
+        // Verify that this specific user actually made a deposit with this exact tx_ref
+        const validDeposit = await Deposit.findOne({
+            user_id: user._id,
+            tx_ref: txRefStr
+        });
+
+        if (!validDeposit) {
+            return res.status(400).json({ error: 'Invalid transaction reference ID. Password reset denied.' });
+        }
+
+        // Hash the new password and save
+        user.password = await bcrypt.hash(new_password, 10);
+        await user.save();
+
+        // Audit log for security
+        await Transaction.create({
+            user_id: user._id,
+            type: 'PASSWORD_RESET',
+            amount: 0,
+            description: 'Password reset successfully via transaction verification'
+        });
+
+        res.json({ success: true, message: 'Password reset successful! You can now log in.' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // ==================== USER DASHBOARD & ACTION APIS ====================
 
 app.get('/api/user/:id', async (req, res) => {
@@ -530,69 +575,4 @@ app.get('/api/user-referrals/:id', async (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Crystal Invest Uganda Server running on port ${PORT}`);
-});
-
-app.post('/api/forgot-password', async (req, res) => {
-    try {
-        const { phone, new_password } = req.body;
-
-        if (!phone || !new_password) {
-            return res.status(400).json({ error: 'Please provide both phone number and new password.' });
-        }
-
-        const user = await User.findOne({ phone });
-        if (!user) {
-            return res.status(404).json({ error: 'No account found with this phone number.' });
-        }
-
-        // Hash the new password
-        const hashedPassword = await bcrypt.hash(new_password, 10);
-        user.password = hashedPassword;
-        await user.save();
-
-        res.json({ success: true, message: 'Password reset successful! You can now log in.' });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-app.post('/api/forgot-password', async (req, res) => {
-    try {
-        const { phone, tx_ref, new_password } = req.body;
-
-        if (!phone || !tx_ref || !new_password) {
-            return res.status(400).json({ error: 'Please provide your phone number, last transaction ID, and new password.' });
-        }
-
-        const user = await User.findOne({ phone });
-        if (!user) {
-            return res.status(404).json({ error: 'No account found with this phone number.' });
-        }
-
-        // Check if the transaction reference ID matches one of this user's deposits
-        const validDeposit = await Deposit.findOne({
-            user_id: user._id,
-            tx_ref: tx_ref.trim()
-        });
-
-        if (!validDeposit) {
-            return res.status(400).json({ error: 'Invalid transaction reference ID. Please enter a valid transaction ID from one of your previous deposits.' });
-        }
-
-        // Hash the new password and save
-        user.password = await bcrypt.hash(new_password, 10);
-        await user.save();
-
-        // Optional: Log a transaction for security audit
-        await Transaction.create({
-            user_id: user._id,
-            type: 'PASSWORD_RESET',
-            amount: 0,
-            description: 'Password reset successfully using deposit transaction verification'
-        });
-
-        res.json({ success: true, message: 'Password reset successful! You can now log in.' });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
 });
