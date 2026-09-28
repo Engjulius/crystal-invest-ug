@@ -222,6 +222,12 @@
             <p style="color: #94a3b8;">Loading active mines...</p>
         </div>
 
+        <!-- Completed Mines History Section -->
+        <h2 class="section-title">Completed Mining Rigs History</h2>
+        <div id="completed-mines-container" class="grid-2">
+            <p style="color: #94a3b8;">Loading completed mines...</p>
+        </div>
+
         <!-- Available Packages Section -->
         <h2 class="section-title">Deploy New Crystal Mine</h2>
         <div id="packages-container" class="grid-2">
@@ -290,26 +296,55 @@
             try {
                 const res = await fetch(`/api/user-packages/${userId}`);
                 const mines = await res.json();
-                const container = document.getElementById('active-mines-container');
-                container.innerHTML = '';
-                if (mines.length === 0) {
-                    container.innerHTML = '<p style="color: #94a3b8;">No active mining rigs deployed yet.</p>';
-                    return;
+                
+                // Separate ongoing vs completed rigs
+                const ongoingMines = mines.filter(mine => mine.status === 'Ongoing');
+                const completedMines = mines.filter(mine => mine.status === 'Completed');
+
+                // Render Active Rigs
+                const activeContainer = document.getElementById('active-mines-container');
+                activeContainer.innerHTML = '';
+                if (ongoingMines.length === 0) {
+                    activeContainer.innerHTML = '<p style="color: #94a3b8;">No active mining rigs deployed yet.</p>';
+                } else {
+                    ongoingMines.forEach(mine => {
+                        const card = document.createElement('div');
+                        card.className = 'mine-card';
+                        card.innerHTML = `
+                            <div>
+                                <h3 style="color: #38bdf8; margin-bottom: 5px;">💎 ${mine.package_name}</h3>
+                                <p style="font-size: 0.9rem; color: #cbd5e1;">Capital: <b>${mine.capital.toLocaleString()} UGX</b></p>
+                                <p style="font-size: 0.9rem; color: #cbd5e1;">Daily Yield: <b>${mine.daily_yield_percent}%</b></p>
+                                <p style="font-size: 0.9rem; color: #cbd5e1;">Status: <span style="color: #34d399;">${mine.status}</span></p>
+                                <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 5px;">Ends: ${new Date(mine.end_date).toLocaleString()}</p>
+                            </div>
+                        `;
+                        activeContainer.appendChild(card);
+                    });
                 }
-                mines.forEach(mine => {
-                    const card = document.createElement('div');
-                    card.className = 'mine-card';
-                    card.innerHTML = `
-                        <div>
-                            <h3 style="color: #38bdf8; margin-bottom: 5px;">💎 ${mine.package_name}</h3>
-                            <p style="font-size: 0.9rem; color: #cbd5e1;">Capital: <b>${mine.capital.toLocaleString()} UGX</b></p>
-                            <p style="font-size: 0.9rem; color: #cbd5e1;">Daily Yield: <b>${mine.daily_yield_percent}%</b></p>
-                            <p style="font-size: 0.9rem; color: #cbd5e1;">Status: <span style="color: #34d399;">${mine.status}</span></p>
-                            <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 5px;">Ends: ${new Date(mine.end_date).toLocaleString()}</p>
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
+
+                // Render Completed Rigs History
+                const completedContainer = document.getElementById('completed-mines-container');
+                completedContainer.innerHTML = '';
+                if (completedMines.length === 0) {
+                    completedContainer.innerHTML = '<p style="color: #94a3b8;">No completed mining rigs yet.</p>';
+                } else {
+                    completedMines.forEach(mine => {
+                        const card = document.createElement('div');
+                        card.className = 'mine-card';
+                        card.style.borderColor = 'rgba(148, 163, 184, 0.2)';
+                        card.innerHTML = `
+                            <div>
+                                <h3 style="color: #94a3b8; margin-bottom: 5px;">💎 ${mine.package_name}</h3>
+                                <p style="font-size: 0.9rem; color: #94a3b8;">Capital: <b>${mine.capital.toLocaleString()} UGX</b></p>
+                                <p style="font-size: 0.9rem; color: #94a3b8;">Daily Yield: <b>${mine.daily_yield_percent}%</b></p>
+                                <p style="font-size: 0.9rem; color: #94a3b8;">Status: <span style="color: #f87171;">${mine.status}</span></p>
+                                <p style="font-size: 0.8rem; color: #64748b; margin-top: 5px;">Completed On: ${new Date(mine.end_date).toLocaleString()}</p>
+                            </div>
+                        `;
+                        completedContainer.appendChild(card);
+                    });
+                }
             } catch (err) { console.error(err); }
         }
 
