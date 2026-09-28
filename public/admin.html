@@ -28,6 +28,12 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
             padding: 20px;
             margin: 15px auto;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .glass-card.clickable:hover {
+            transform: translateY(-3px);
+            border-color: rgba(251, 191, 36, 0.4);
         }
 
         header {
@@ -141,19 +147,19 @@
         <div id="admin-panel">
             <!-- First Row Stats -->
             <div class="stats-grid">
-                <div class="glass-card stat-box" style="margin:0;">
+                <div class="glass-card stat-box clickable" onclick="location.href='balances.html'" style="margin:0; cursor: pointer;">
                     <h3>Total User Balances</h3>
                     <div class="val" id="stat-balances">0 UGX</div>
                 </div>
-                <div class="glass-card stat-box" style="margin:0;">
+                <div class="glass-card stat-box clickable" onclick="location.href='withdrawable.html'" style="margin:0; cursor: pointer;">
                     <h3>Total Withdrawable Profits</h3>
                     <div class="val" id="stat-profits" style="color: #34d399;">0 UGX</div>
                 </div>
-                <div class="glass-card stat-box" style="margin:0;">
+                <div class="glass-card stat-box clickable" onclick="location.href='active-rigs.html'" style="margin:0; cursor: pointer;">
                     <h3>Active Mining Rigs</h3>
                     <div class="val" id="stat-mines" style="color: #38bdf8;">0</div>
                 </div>
-                <div class="glass-card stat-box" style="margin:0;">
+                <div class="glass-card stat-box clickable" onclick="location.href='capital-deployed.html'" style="margin:0; cursor: pointer;">
                     <h3>Active Capital Deployed</h3>
                     <div class="val" id="stat-capital">0 UGX</div>
                 </div>
@@ -161,19 +167,19 @@
 
             <!-- Second Row Stats (Users & Demographics) -->
             <div class="stats-grid" style="margin-bottom: 25px;">
-                <div class="glass-card stat-box" style="margin:0;">
+                <div class="glass-card stat-box clickable" onclick="location.href='totalusers.html'" style="margin:0; cursor: pointer;">
                     <h3>Total Registered Users</h3>
                     <div class="val" id="stat-total-users" style="color: #c084fc;">0</div>
                 </div>
-                <div class="glass-card stat-box" style="margin:0;">
+                <div class="glass-card stat-box clickable" onclick="location.href='maleusers.html'" style="margin:0; cursor: pointer;">
                     <h3>Total Male Users</h3>
                     <div class="val" id="stat-male-users" style="color: #60a5fa;">0</div>
                 </div>
-                <div class="glass-card stat-box" style="margin:0;">
+                <div class="glass-card stat-box clickable" onclick="location.href='femaleusers.html'" style="margin:0; cursor: pointer;">
                     <h3>Total Female Users</h3>
                     <div class="val" id="stat-female-users" style="color: #f472b6;">0</div>
                 </div>
-                <div class="glass-card stat-box" style="margin:0;">
+                <div class="glass-card stat-box clickable" onclick="location.href='onlineusers.html'" style="margin:0; cursor: pointer;">
                     <h3>Online Users</h3>
                     <div class="val" id="stat-online-users" style="color: #4ade80;">1</div>
                 </div>

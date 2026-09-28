@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crystal Invest Admin - Total Registered Users</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #f43f5e, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-btn {
+            background: rgba(251, 191, 36, 0.2);
+            border: 1px solid #fbbf24;
+            color: #fbbf24;
+            padding: 6px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        .back-btn:hover {
+            background: rgba(251, 191, 36, 0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            color: #cbd5e1;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        td {
+            color: #f1f5f9;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            color: #c084fc;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">🛡️ Crystal Invest Admin Portal</div>
+        <a href="admin_3.html" class="back-btn">← Back to Admin Portal</a>
+    </header>
+
+    <div class="container">
+        <h2>Total Registered Users Detail</h2>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 15px;">Complete directory of all registered user accounts on Crystal Invest UG.</p>
+        
+        <div class="glass-card">
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Full Name</th>
+                            <th>Phone</th>
+                            <th>Gender</th>
+                            <th>Main Balance</th>
+                            <th>Withdrawable Profit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody">
+                        <tr><td colspan="6" style="text-align:center; color:#94a3b8;">Loading users directory...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadTotalUsers() {
+            try {
+                const res = await fetch('/api/admin/users-list');
+                const users = await res.json();
+                const tbody = document.getElementById('tbody');
+                
+                tbody.innerHTML = '';
+
+                if (!users || users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#94a3b8;">No registered users found.</td></tr>';
+                    return;
+                }
+
+                users.forEach(u => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><span style="color: #c084fc; font-weight:600;">@${u.username}</span></td>
+                        <td>${u.first_name || ''} ${u.second_name || ''}</td>
+                        <td>${u.phone || 'N/A'}</td>
+                        <td>${u.sex || 'Not Specified'}</td>
+                        <td>${(u.balance || 0).toLocaleString()} UGX</td>
+                        <td><b style="color: #34d399;">${(u.withdrawable_profit || 0).toLocaleString()} UGX</b></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error(err);
+                document.getElementById('tbody').innerHTML = '<tr><td colspan="6" style="text-align:center; color:#ef4444;">Failed to load data.</td></tr>';
+            }
+        }
+
+        loadTotalUsers();
+    </script>
+</body>
+</html>
