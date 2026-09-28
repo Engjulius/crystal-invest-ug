@@ -122,7 +122,6 @@ app.post('/api/forgot-password', async (req, res) => {
             return res.status(404).json({ error: 'No account found with this phone number.' });
         }
 
-        // Verify that this specific user actually made a deposit with this exact tx_ref
         const validDeposit = await Deposit.findOne({
             user_id: user._id,
             tx_ref: txRefStr
@@ -132,11 +131,9 @@ app.post('/api/forgot-password', async (req, res) => {
             return res.status(400).json({ error: 'Invalid transaction reference ID. Password reset denied.' });
         }
 
-        // Hash the new password and save
         user.password = await bcrypt.hash(new_password, 10);
         await user.save();
 
-        // Audit log for security
         await Transaction.create({
             user_id: user._id,
             type: 'PASSWORD_RESET',
@@ -404,7 +401,6 @@ app.post('/api/admin/withdrawal-action', async (req, res) => {
         withdrawal.status = status;
         await withdrawal.save();
 
-        // If marked as Rejected, refund directly back to withdrawable profit
         if (status === 'Rejected' && previousStatus !== 'Rejected') {
             const user = await User.findById(withdrawal.user_id);
             if (user) {
@@ -476,7 +472,6 @@ app.get('/api/admin/user-packages', async (req, res) => {
             .skip(offset)
             .limit(limit);
 
-        // Manually attach user info to ensure username and phone are never undefined
         const packages = await Promise.all(rawPackages.map(async (pkg) => {
             const user = await User.findById(pkg.user_id).select('username phone');
             return {
@@ -491,6 +486,21 @@ app.get('/api/admin/user-packages', async (req, res) => {
             total,
             hasMore: offset + packages.length < total
         });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ADDED: Endpoint required for balances.html and onlineusers.html
+app.get('/api/admin/users-list', async (req, res) => {
+    try {
+        const users = await User.find({}).select('-password');
+        const usersWithOnlineStatus = users.map(u => {
+            const userObj = u.toObject();
+            userObj.is_online = activeUsers.has(String(u._id));
+            return userObj;
+        });
+        res.json(usersWithOnlineStatus);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
