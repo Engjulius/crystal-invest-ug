@@ -200,7 +200,7 @@
                 <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 10px;">AIRTEL Merchant ID: <b>7020120</b> & MTN Merchant ID: <b>7020120</b> </p>
                 <form id="deposit-form">
                     <input type="number" id="deposit-amount" placeholder="Amount (UGX)" required>
-                    <input type="text" id="deposit-txref" placeholder="Mobile Money Transaction ID" required>
+                    <input type="text" id="deposit-txref" placeholder="Mobile Money Transaction ID" required minlength="12" maxlength="12" pattern="[0-9]{12}" inputmode="numeric" title="Transaction ID must be exactly 12 digits">
                     <button type="submit" class="btn btn-deposit">Submit Deposit Request</button>
                 </form>
             </div>
