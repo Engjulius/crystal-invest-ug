@@ -144,6 +144,11 @@
 
         .table-responsive { overflow-x: auto; }
 
+        #show-more-referrals {
+            display: none;
+            margin: 15px auto 0;
+        }
+
         .alert {
             padding: 10px;
             border-radius: 8px;
@@ -206,6 +211,7 @@
                     </tbody>
                 </table>
             </div>
+            <button id="show-more-referrals" class="btn" type="button" onclick="showMoreReferrals()">Show more</button>
         </div>
     </div>
 
@@ -216,6 +222,38 @@
         function logout() {
             localStorage.clear();
             window.location.href = 'login.html';
+        }
+
+        let referralUsers = [];
+        let visibleReferralCount = 5;
+
+        function renderReferrals() {
+            const tbody = document.getElementById('referrals-tbody');
+            tbody.innerHTML = '';
+
+            if (referralUsers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#94a3b8;">No referrals yet. Start sharing your link!</td></tr>';
+                document.getElementById('show-more-referrals').style.display = 'none';
+                return;
+            }
+
+            referralUsers.slice(0, visibleReferralCount).forEach(ref => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>@${ref.username}</td>
+                    <td>${new Date(ref.created_at).toLocaleString()}</td>
+                    <td><span style="color: #34d399; font-weight:600;">Active</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('show-more-referrals').style.display =
+                visibleReferralCount < referralUsers.length ? 'block' : 'none';
+        }
+
+        function showMoreReferrals() {
+            visibleReferralCount += 5;
+            renderReferrals();
         }
 
         async function loadReferralData() {
@@ -231,22 +269,9 @@
                 document.getElementById('total-referrals').innerText = data.total_referrals || 0;
                 document.getElementById('referral-earnings').innerText = `${(data.total_earnings || 0).toLocaleString()} UGX`;
 
-                const tbody = document.getElementById('referrals-tbody');
-                tbody.innerHTML = '';
-                if (!data.referrals || data.referrals.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#94a3b8;">No referrals yet. Start sharing your link!</td></tr>';
-                    return;
-                }
-
-                data.referrals.forEach(ref => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>@${ref.username}</td>
-                        <td>${new Date(ref.created_at).toLocaleString()}</td>
-                        <td><span style="color: #34d399; font-weight:600;">Active</span></td>
-                    `;
-                    tbody.appendChild(tr);
-                });
+                referralUsers = data.referrals || [];
+                visibleReferralCount = 5;
+                renderReferrals();
             } catch (err) {
                 console.error(err);
             }
@@ -262,7 +287,6 @@
             box.style.display = 'block';
             setTimeout(() => { box.style.display = 'none'; }, 3000);
         }
-
         loadReferralData();
     </script>
 </body>
