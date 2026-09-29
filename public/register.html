@@ -309,7 +309,7 @@
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn">Register Account</button>
+            <button type="submit" class="btn" id="register-button" disabled>Register Account</button>
         </form>
         <div class="login-link">
             Already have an account? <a href="index.html">Login here</a>
@@ -325,6 +325,12 @@
     </div>
 
     <script>
+        const termsCheckbox = document.getElementById('terms');
+        const registerButton = document.getElementById('register-button');
+        termsCheckbox.addEventListener('change', () => {
+            registerButton.disabled = !termsCheckbox.checked;
+        });
+
         const passwordInput = document.getElementById('password');
         const togglePasswordBtn = document.querySelector('.toggle-password');
 
