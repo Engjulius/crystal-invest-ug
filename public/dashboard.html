@@ -162,6 +162,13 @@
             margin-bottom: 15px;
             font-size: 0.9rem;
             display: none;
+            position: fixed;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(90%, 520px);
+            z-index: 1000;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
         }
         .alert-error { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; }
         .alert-success { background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #6ee7b7; }
@@ -279,7 +286,10 @@
             box.className = `alert ${isSuccess ? 'alert-success' : 'alert-error'}`;
             box.innerText = message;
             box.style.display = 'block';
-            setTimeout(() => { box.style.display = 'none'; }, 5000);
+            box.setAttribute('role', isSuccess ? 'status' : 'alert');
+            box.setAttribute('aria-live', isSuccess ? 'polite' : 'assertive');
+            clearTimeout(showAlert.hideTimer);
+            showAlert.hideTimer = setTimeout(() => { box.style.display = 'none'; }, 7000);
         }
 
         async function loadUserData() {
@@ -451,11 +461,11 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    showAlert(data.message, true);
+                    showAlert(data.message || 'Deposit request submitted successfully.', true);
                     document.getElementById('deposit-amount').value = '';
                     document.getElementById('deposit-txref').value = '';
                 } else {
-                    showAlert(data.error, false);
+                    showAlert(data.error || data.message || 'Deposit request was unsuccessful.', false);
                 }
             } catch (err) { showAlert('Error submitting deposit.', false); }
         });
@@ -472,12 +482,12 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    showAlert(data.message, true);
+                    showAlert(data.message || 'Withdrawal request submitted successfully.', true);
                     document.getElementById('withdraw-amount').value = '';
                     loadUserData();
                     loadTransactions();
                 } else {
-                    showAlert(data.error, false);
+                    showAlert(data.error || data.message || 'Withdrawal request was unsuccessful.', false);
                 }
             } catch (err) { showAlert('Error submitting withdrawal request.', false); }
         });
