@@ -124,6 +124,14 @@
             border: 1px dashed rgba(251, 191, 36, 0.3);
         }
 
+        a.code-snippet {
+            text-decoration: none;
+        }
+
+        a.code-snippet:hover {
+            background: rgba(0, 0, 0, 0.45);
+        }
+
         .steps-list {
             list-style: none;
             counter-reset: step-counter;
@@ -184,7 +192,7 @@
                 <div class="payment-method-box">
                     <h3>🔴 Airtel Money</h3>
                     <p style="margin-bottom: 8px; font-size: 0.85rem;">Dial the USSD code:</p>
-                    <div class="code-snippet">*185*9#</div>
+                    <a class="code-snippet" href="tel:*185*9%23" aria-label="Dial Airtel Money code *185*9#">*185*9#</a>
                     <p style="margin: 10px 0 4px 0; font-size: 0.85rem;">Merchant Code:</p>
                     <div class="code-snippet">6069719</div>
                 </div>
@@ -192,7 +200,7 @@
                 <div class="payment-method-box">
                     <h3>🟡 MTN Mobile Money</h3>
                     <p style="margin-bottom: 8px; font-size: 0.85rem;">Dial the USSD code:</p>
-                    <div class="code-snippet">*165*3#</div>
+                    <a class="code-snippet" href="tel:*165*3%23" aria-label="Dial MTN Mobile Money code *165*3#">*165*3#</a>
                     <p style="margin: 10px 0 4px 0; font-size: 0.85rem;">Merchant Code:</p>
                     <div class="code-snippet">58579171</div>
                 </div>
