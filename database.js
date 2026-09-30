@@ -86,11 +86,12 @@ const Withdrawal = mongoose.model('Withdrawal', withdrawalSchema);
 // Auto-seed packages with 10% daily yield
 async function seedPackages() {
     const defaultPackages = [
-        { name: 'Quartz Crystal Node', capital: 25000, daily_yield_percent: 10.0, duration_days: 30 },
-        { name: 'Ruby Extraction Unit', capital: 50000, daily_yield_percent: 10.0, duration_days: 30 },
-        { name: 'Topaz Mining Rig', capital: 100000, daily_yield_percent: 10.0, duration_days: 30 },
-        { name: 'Amethyst Crystal Vein', capital: 250000, daily_yield_percent: 10.0, duration_days: 30 },
-        { name: 'Diamond Syndicate', capital: 500000, daily_yield_percent: 10.0, duration_days: 30 },
+        { name: 'Micro Crystal Node', capital: 10000, daily_yield_percent: 10.0, duration_days: 17 },
+        { name: 'Quartz Crystal Node', capital: 25000, daily_yield_percent: 10.0, duration_days: 19 },
+        { name: 'Ruby Extraction Unit', capital: 50000, daily_yield_percent: 10.0, duration_days: 21 },
+        { name: 'Topaz Mining Rig', capital: 100000, daily_yield_percent: 10.0, duration_days: 23 },
+        { name: 'Amethyst Crystal Vein', capital: 250000, daily_yield_percent: 10.0, duration_days: 25 },
+        { name: 'Diamond Syndicate', capital: 500000, daily_yield_percent: 10.0, duration_days: 28 },
         { name: 'Sapphire Master Mine', capital: 1000000, daily_yield_percent: 10.0, duration_days: 30 },
         { name: 'Emerald Deep Shaft', capital: 2000000, daily_yield_percent: 10.0, duration_days: 30 }
     ];
